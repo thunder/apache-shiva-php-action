@@ -13,7 +13,7 @@ jobs:
         run: |
           mkdir /tmp/sut
           echo '<?php' | sudo tee /tmp/sut/index.php
-          echo '  throw new \Exception();' | sudo tee -a /tmp/sut/index.php
+          echo '  print "<strong>Hello World</strong>";' | sudo tee -a /tmp/sut/index.php
         shell: bash
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
