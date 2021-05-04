@@ -20,7 +20,7 @@ jobs:
         with:
           php-version: ${{ matrix.PHP_VERSION }}
       - name: Setup Apache
-        uses: thunder/apache-shiva-php-action
+        uses: ./
         with:
           php-version: ${{ matrix.PHP_VERSION }}
           site-directory: /tmp/sut

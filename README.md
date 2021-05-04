@@ -11,7 +11,7 @@ This is a GitHub action that runs Apache with mod_php to serve a website. Use af
   with:
     php-version: '7.4'
 - name: Setup Apache
-  uses: thunder/apache-shiva-php-action
+  uses: thunder/apache-shiva-php-action@v1
   with:
     php-version: '7.4'
     site-directory: /path/to/code
