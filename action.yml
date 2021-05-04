@@ -37,15 +37,15 @@ runs:
         echo '  CustomLog ${APACHE_LOG_DIR}/access.log combined' | sudo tee -a /etc/apache2/sites-available/sut.conf
         echo '</VirtualHost>' | sudo tee -a /etc/apache2/sites-available/sut.conf
         sudo sed -ri -e "s!Listen 80!Listen ${{ inputs.http-port }}!g" /etc/apache2/ports.conf
-        source /etc/apache2/envvars
-        export APACHE_LOG_DIR="${PWD}"
-        export APACHE_LOCK_DIR="${PWD}"
-        export APACHE_PID_FILE="${PWD}/apache2.pid"
         sudo a2ensite sut
         sudo a2dissite 000-default
       shell: bash
     - name: Start Apache in the foreground
       run: |
+        source /etc/apache2/envvars
+        export APACHE_LOG_DIR="${PWD}"
+        export APACHE_LOCK_DIR="${PWD}"
+        export APACHE_PID_FILE="${PWD}/apache2.pid"
         nohup apache2 -DFOREGROUND > /dev/null 2>&1 &
         sleep 2
         nc -z "127.0.0.1" "${{ inputs.http-port }}"
