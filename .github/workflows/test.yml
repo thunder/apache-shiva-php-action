@@ -1,0 +1,30 @@
+name: Test
+on:
+  pull_request:
+jobs:
+  test:
+    strategy:
+      matrix:
+        PHP_VERSION: [ '7.3', '7.4', '8.0', '8.1' ]
+    name: Test Apache action
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create fake site
+        run: |
+          mkdir /tmp/sut
+          echo '<?php' | sudo tee /tmp/sut/index.php
+          echo '  print "<strong>Hello World</strong>";' | sudo tee -a /tmp/sut/index.php
+        shell: bash
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.PHP_VERSION }}
+      - name: Setup Apache
+        uses: thunder/apache-shiva-php-action
+        with:
+          php-version: ${{ matrix.PHP_VERSION }}
+          site-directory: /tmp/sut
+          http-port: 9090
+      - name: Test fake site
+        run: |
+          curl -sSf http://127.0.0.1:9090 > /dev/null
