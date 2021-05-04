@@ -26,6 +26,9 @@ jobs:
           php-version: ${{ matrix.PHP_VERSION }}
           site-directory: /tmp/sut
           http-port: 9090
+      #   Start a debug session.
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Test fake site
         run: |
           curl -sSf http://127.0.0.1:9090 > /dev/null

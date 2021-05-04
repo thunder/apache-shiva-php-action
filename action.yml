@@ -44,12 +44,9 @@ runs:
         sudo a2ensite sut
         sudo a2dissite 000-default
       shell: bash
-    #   Start a debug session.
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-    - name: Start Apache in the foreground
-      run: |
-        nohup apache2 -DFOREGROUND > /dev/null 2>&1 &
-        sleep 2
-        nc -z "127.0.0.1" "${{ inputs.http-port }}"
-      shell: bash
+#    - name: Start Apache in the foreground
+#      run: |
+#        nohup apache2 -DFOREGROUND > /dev/null 2>&1 &
+#        sleep 2
+#        nc -z "127.0.0.1" "${{ inputs.http-port }}"
+#      shell: bash
