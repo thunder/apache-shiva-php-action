@@ -1,0 +1,42 @@
+name: 'Apache PHP'
+description: 'Use after shivammathur/setup-php to use Apache. Logs will be written to the working directory.'
+inputs:
+  php-version:
+    description: 'Setup PHP version. Must match the PHP version used by shivammathur/setup-php'
+    required: true
+  site-directory:
+    description: 'The site directory for Apache to serve'
+    required: true
+  http-port:
+    description: 'The port for Apache to listen to HTTP requests'
+    default: 8888
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        LC_ALL=C.UTF-8 sudo apt-add-repository http://ppa.launchpad.net/ondrej/php/ubuntu
+        sudo apt install libapache2-mod-php${{ inputs.php-version }}
+        sudo a2enmod php${{ inputs.php-version }} rewrite
+        echo "<Directory ${{ inputs.site-directory }}>" | sudo tee /etc/apache2/sites-available/thunder.conf
+        echo '  Options Indexes FollowSymLinks' | sudo tee -a /etc/apache2/sites-available/thunder.conf
+        echo '  AllowOverride all' | sudo tee -a /etc/apache2/sites-available/thunder.conf
+        echo '  Require all granted' | sudo tee -a /etc/apache2/sites-available/thunder.conf
+        echo '</Directory>' | sudo tee -a /etc/apache2/sites-available/thunder.conf
+        echo '' | sudo tee -a /etc/apache2/sites-available/thunder.conf
+        echo "<VirtualHost *:${{ inputs.http-port }}>" | sudo tee -a /etc/apache2/sites-available/thunder.conf
+        echo '  ServerAdmin webmaster@localhost' | sudo tee -a /etc/apache2/sites-available/thunder.conf
+        echo "  DocumentRoot ${{ inputs.site-directory }}" | sudo tee -a /etc/apache2/sites-available/thunder.conf
+        echo '  ErrorLog ${APACHE_LOG_DIR}/error.log' | sudo tee -a /etc/apache2/sites-available/thunder.conf
+        echo '  CustomLog ${APACHE_LOG_DIR}/access.log combined' | sudo tee -a /etc/apache2/sites-available/thunder.conf
+        echo '</VirtualHost>' | sudo tee -a /etc/apache2/sites-available/thunder.conf
+        sudo sed -ri -e "s!Listen 80!Listen ${{ inputs.http-port }}!g" /etc/apache2/ports.conf
+        source /etc/apache2/envvars
+        export APACHE_LOG_DIR="${PWD}"
+        export APACHE_LOCK_DIR="${PWD}"
+        export APACHE_PID_FILE="${PWD}/apache2.pid"
+        sudo a2ensite thunder
+        sudo a2dissite 000-default
+        nohup apache2 -DFOREGROUND > /dev/null 2>&1 &
+        sleep 2
+        nc -z "127.0.0.1" "${{ inputs.http-port }}"
+      shell: bash
