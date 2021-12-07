@@ -12,6 +12,8 @@ jobs:
     name: Test Apache action
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
+
       - name: Create fake site
         run: |
           mkdir /tmp/sut
@@ -20,21 +22,17 @@ jobs:
           echo '  print "<strong>$text</strong>";' | sudo tee -a /tmp/sut/index.php
         shell: bash
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.PHP_VERSION }}
-
-      #   Start a debug session.
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-
       - name: Setup Apache
         uses: ./
         with:
           php-version: ${{ matrix.PHP_VERSION }}
           site-directory: /tmp/sut
           http-port: 9090
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.PHP_VERSION }}
 
       - name: Test fake site
         run: |
