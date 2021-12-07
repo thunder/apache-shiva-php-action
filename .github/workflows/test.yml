@@ -19,17 +19,23 @@ jobs:
           echo '  $text = "It works!";' | sudo tee -a /tmp/sut/index.php
           echo '  print "<strong>$text</strong>";' | sudo tee -a /tmp/sut/index.php
         shell: bash
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.PHP_VERSION }}
-      - uses: actions/checkout@v2
+
+      #   Start a debug session.
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: Setup Apache
         uses: ./
         with:
           php-version: ${{ matrix.PHP_VERSION }}
           site-directory: /tmp/sut
           http-port: 9090
+
       - name: Test fake site
         run: |
           curl -sSf http://127.0.0.1:9090
