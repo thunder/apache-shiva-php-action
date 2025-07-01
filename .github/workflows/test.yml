@@ -24,7 +24,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.PHP_VERSION }}
-          extensions: :redis, :pspell, :xdebug, Imagick
       - name: Ensure Xdebug is not running
         run: |
           php -m
