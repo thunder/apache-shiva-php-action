@@ -12,15 +12,18 @@ inputs:
     default: 8888\
 # Install Apache and configure to serve the site under test. Apache is run
 # in the foreground using the same user as the test runner to avoid common
-# pitfalls with file ownership.
+# pitfalls with file ownership. This action also disables xdebug if it has
+# resulted in it being installed.
 runs:
   using: "composite"
   steps:
     - name: Install Apache with mod_php
       run: |
+        WAS_XDEBUG_INSTALLED=`php -r "echo extension_loaded('xdebug');"`
         LC_ALL=C.UTF-8 sudo apt-add-repository http://ppa.launchpad.net/ondrej/php/ubuntu
         sudo apt install libapache2-mod-php${{ inputs.php-version }}
-        sudo phpdismod xdebug || true
+        IS_XDEBUG_INSTALLED=`php -r "echo extension_loaded('xdebug');"`
+        if [ "$IS_XDEBUG_INSTALLED" == "1" && WAS_XDEBUG_INSTALLED == "" ]; then sudo phpdismod xdebug; fi;
         sudo a2enmod php${{ inputs.php-version }} rewrite
       shell: bash
     - name: Configure the site under test
