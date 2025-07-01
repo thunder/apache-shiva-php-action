@@ -20,6 +20,7 @@ runs:
       run: |
         LC_ALL=C.UTF-8 sudo apt-add-repository http://ppa.launchpad.net/ondrej/php/ubuntu
         sudo apt install libapache2-mod-php${{ inputs.php-version }}
+        sudo phpdismod xdebug || true
         sudo a2enmod php${{ inputs.php-version }} rewrite
       shell: bash
     - name: Configure the site under test
