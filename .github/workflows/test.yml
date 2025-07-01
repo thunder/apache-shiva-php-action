@@ -9,8 +9,9 @@ jobs:
     strategy:
       matrix:
         PHP_VERSION: [ '8.1', '8.3', '8.4' ]
+        OS: [ubuntu-latest, ubuntu-24.04]
     name: Test Apache action
-    runs-on: [ubuntu-latest, ubuntu-24.04]
+    runs-on:  ${{ matrix.OS }}
     steps:
       - name: Create fake site
         run: |
