@@ -23,6 +23,9 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.PHP_VERSION }}
+      - name: Ensure Xdebug is not running
+        run: |
+          php -r "exit(extension_loaded('xdebug'));"
       - uses: actions/checkout@v2
       - name: Setup Apache
         uses: ./
@@ -33,3 +36,6 @@ jobs:
       - name: Test fake site
         run: |
           curl -sSf http://127.0.0.1:9090
+      - name: Ensure Xdebug is not running
+        run: |
+          php -r "exit(extension_loaded('xdebug'));"
