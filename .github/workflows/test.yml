@@ -27,7 +27,7 @@ jobs:
       - name: Ensure Xdebug is not running
         run: |
           php -m
-          php -r "exit(extension_loaded('xdebug'));"
+          php -r "if (extension_loaded('xdebug')) trigger_error('xdebug on', E_USER_ERROR);"
       - uses: actions/checkout@v2
       - name: Setup Apache
         uses: ./
@@ -41,4 +41,4 @@ jobs:
       - name: Ensure Xdebug is not running
         run: |
           php -m
-          php -r "exit(extension_loaded('xdebug'));"
+          php -r "if (extension_loaded('xdebug')) trigger_error('xdebug on', E_USER_ERROR);"
