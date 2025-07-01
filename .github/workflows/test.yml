@@ -9,8 +9,9 @@ jobs:
     strategy:
       matrix:
         PHP_VERSION: [ '8.1', '8.3', '8.4' ]
+        OS: [ubuntu-latest, ubuntu-24.04]
     name: Test Apache action
-    runs-on: ubuntu-latest
+    runs-on:  ${{ matrix.OS }}
     steps:
       - name: Create fake site
         run: |
@@ -23,6 +24,11 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.PHP_VERSION }}
+          extensions: :xdebug
+      - name: Ensure Xdebug is not running
+        run: |
+          php -m
+          php -r "if (extension_loaded('xdebug')) trigger_error('xdebug on', E_USER_ERROR);"
       - uses: actions/checkout@v2
       - name: Setup Apache
         uses: ./
@@ -33,3 +39,41 @@ jobs:
       - name: Test fake site
         run: |
           curl -sSf http://127.0.0.1:9090
+      - name: Ensure Xdebug is not running
+        run: |
+          php -m
+          php -r "if (extension_loaded('xdebug')) trigger_error('xdebug on', E_USER_ERROR);"
+  test-with-xdebug:
+    name: Test Apache action
+    runs-on:  ubuntu-latest
+    steps:
+      - name: Create fake site
+        run: |
+          mkdir /tmp/sut
+          echo '<?php' | sudo tee /tmp/sut/index.php
+          echo '  $text = "It works!";' | sudo tee -a /tmp/sut/index.php
+          echo '  print "<strong>$text</strong>";' | sudo tee -a /tmp/sut/index.php
+        shell: bash
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: xdebug
+      - name: Ensure Xdebug is running
+        run: |
+          php -m
+          php -r "if (!extension_loaded('xdebug')) trigger_error('xdebug on', E_USER_ERROR);"
+      - uses: actions/checkout@v2
+      - name: Setup Apache
+        uses: ./
+        with:
+          php-version: 8.4
+          site-directory: /tmp/sut
+          http-port: 9090
+      - name: Test fake site
+        run: |
+          curl -sSf http://127.0.0.1:9090
+      - name: Ensure Xdebug is running
+        run: |
+          php -m
+          php -r "if (!extension_loaded('xdebug')) trigger_error('xdebug on', E_USER_ERROR);"
