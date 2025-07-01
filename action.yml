@@ -24,8 +24,10 @@ runs:
         sudo apt install libapache2-mod-php${{ inputs.php-version }}
         sudo a2enmod php${{ inputs.php-version }} rewrite
         IS_XDEBUG_INSTALLED=`php -r "echo extension_loaded('xdebug');"`
-        echo "IS_XDEBUG_INSTALLED=$IS_XDEBUG_INSTALLED and WAS_XDEBUG_INSTALLED=$WAS_XDEBUG_INSTALLED"
-        if [ "$IS_XDEBUG_INSTALLED" == "1" && "$WAS_XDEBUG_INSTALLED" != "1" ]; then sudo phpdismod xdebug; fi;
+        if [[ "$IS_XDEBUG_INSTALLED" == "1" && "$WAS_XDEBUG_INSTALLED" != "1" ]]; then
+          echo "Disabling Xdebug"
+          sudo phpdismod xdebug
+        fi;
       shell: bash
     - name: Configure the site under test
       run: |
